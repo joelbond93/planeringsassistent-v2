@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="UTF-8" />
+  <title>Planeringsassistent</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+
+<h1>Planeringsassistent</h1>
+
+<!-- AKTIVT TEMA -->
+<div id="active-theme">
+  <div id="active-theme-inner">
+    <span id="active-theme-label">Tema</span>
+    <span id="active-theme-value">Inget valt</span>
+  </div>
+</div>
+
+<!-- TEMA-VÄLJARE -->
+<div id="theme-selector">
+  <select id="conversationTheme" onchange="setConversationTheme()">
+    <option value="">Inget valt tema</option>
+    <option value="travel">Resor</option>
+    <option value="activities">Aktiviteter</option>
+    <option value="food">Mat</option>
+    <option value="projects">Projekt</option>
+    <option value="custom">Eget tema…</option>
+  </select>
+
+  <input
+    id="customThemeInput"
+    type="text"
+    placeholder="Skriv eget tema…"
+    style="display:none;"
+  />
+</div>
+
+<!-- START -->
+<div id="start-screen">
+
+  <div id="start-content">
+    <div class="start-card" id="startIdeas"></div>
+    <p class="start-or">eller skriv själv</p>
+  </div>
+
+  <div id="start-bottom" class="glass">
+    <div class="start-input">
+      <input id="startInput" type="text" placeholder="Vad vill du planera?" />
+      <button onclick="startFromInput()">Starta</button>
+    </div>
+  </div>
+
+</div>
+
+<!-- CHAT -->
+<div id="chat-container" style="display:none;">
+
+  <!-- ✅ VIKTIG FIX: SCROLL-CONTAINER -->
+  <div id="messages"></div>
+
+  <div id="bottom-area" class="glass">
+    <div id="buttons"></div>
+
+    <div id="input-area">
+      <input id="userInput" type="text" placeholder="Skriv här…" />
+      <button onclick="sendMessage()">Skicka</button>
+      <button onclick="resetConversation()">Nollställ</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+
+  const THEME_LABELS = {
+  food: "Mat",
+  travel: "Resor",
+  activities: "Aktiviteter",
+  projects: "Projekt"
+};
+/* =====================
+   STATE
+===================== */
+let conversation = [];
+let lockedTheme = null;
+
+const messagesDiv = document.getElementById("messages");
+const buttonsDiv = document.getElementById("buttons");
+const userInput = document.getElementById("userInput");
+
+/* =====================
+   START-IDÉER
+===================== */
+const startIdeas = [
+  { title: "Planera en middag", desc: "Meny och gäster", prompt: "Jag vill planera en middag." },
+  { title: "Planera en resa", desc: "Semester eller weekend", prompt: "Jag vill planera en resa." },
+  { title: "Hitta på något kul", desc: "Något att göra snart", prompt: "Jag vill hitta på något kul." },
+  { title: "Strukturera en idé", desc: "Från tanke till plan", prompt: "Jag har en idé jag vill strukturera." }
+];
+
+function renderStartIdeas() {
+  const c = document.getElementById("startIdeas");
+  c.innerHTML = "";
+
+  [...startIdeas].sort(() => 0.5 - Math.random()).slice(0, 3).forEach(i => {
+    const b = document.createElement("button");
+    b.innerHTML = `<strong>${i.title}</strong><br><span>${i.desc}</span>`;
+    b.onclick = () => startConversation(i.prompt);
+    c.appendChild(b);
+  });
+}
+
+/* =====================
+   START
+===================== */
+function startFromInput() {
+  const v = document.getElementById("startInput").value.trim();
+  if (v) startConversation(v);
+}
+
+function startConversation(text) {
+  document.getElementById("start-screen").style.display = "none";
+  document.getElementById("chat-container").style.display = "flex";
+  sendMessage(text);
+}
+
+/* =====================
+   TEMA
+===================== */
+function updateThemeUI() {
+  const label =
+    lockedTheme && THEME_LABELS[lockedTheme]
+      ? THEME_LABELS[lockedTheme]
+      : lockedTheme || "Inget valt";
+
+  document.getElementById("active-theme-value").textContent = label;
+  document.body.className = lockedTheme ? `theme-${lockedTheme}` : "";
+  document.getElementById("conversationTheme").value = lockedTheme || "";
+
+}
+
+function setConversationTheme() {
+  const s = document.getElementById("conversationTheme");
+  const i = document.getElementById("customThemeInput");
+
+  if (s.value === "custom") {
+    i.style.display = "inline-block";
+    i.focus();
+    lockedTheme = null;
+  } else {
+    i.style.display = "none";
+    lockedTheme = s.value || null;
+    updateThemeUI();
+  }
+}
+
+document.getElementById("customThemeInput").addEventListener("keydown", e => {
+  if (e.key === "Enter") {
+    lockedTheme = e.target.value.trim();
+    e.target.blur();
+    updateThemeUI();
+  }
+});
+
+/* =====================
+   CHAT UI
+===================== */
+function addMessage(text, sender) {
+  const d = document.createElement("div");
+  d.className = `message ${sender}`;
+  d.textContent = text;
+  messagesDiv.appendChild(d);
+  messagesDiv.scrollTop = messagesDiv.scrollHeight;
+}
+
+function resetConversation() {
+  conversation = [];
+  lockedTheme = null;
+  updateThemeUI();
+  messagesDiv.innerHTML = "";
+  buttonsDiv.innerHTML = "";
+  document.getElementById("chat-container").style.display = "none";
+  document.getElementById("start-screen").style.display = "flex";
+  renderStartIdeas();
+}
+
+/* =====================
+   SEND MESSAGE
+===================== */
+async function sendMessage(override = null) {
+  const text = override || userInput.value.trim();
+  if (!text) return;
+
+  addMessage(text, "user");
+  addMessage("AI tänker…", "assistant");
+
+  userInput.value = "";
+  buttonsDiv.innerHTML = "";
+
+  conversation.push({
+    role: "user",
+    content: lockedTheme ? `[Tema: ${lockedTheme}] ${text}` : text
+  });
+
+  try {
+    const res = await fetch("/api/chat", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ messages: conversation.slice(-8) })
+    });
+
+    const data = await res.json();
+    messagesDiv.lastChild.remove();
+    handleAIResponse(data.message || "");
+  } catch {
+    messagesDiv.lastChild.remove();
+    addMessage("Något gick fel.", "assistant");
+  }
+}
+
+/* =====================
+   AI RESPONSE
+===================== */
+function handleAIResponse(raw) {
+  const split = raw.indexOf("Knapp:");
+  const text = split !== -1 ? raw.slice(0, split) : raw;
+  const btnPart = split !== -1 ? raw.slice(split) : "";
+
+  addMessage(text.trim(), "assistant");
+
+  const buttons = (btnPart.match(/Knapp:\s*([^;]+);/g) || [])
+    .map(b => b.replace("Knapp:", "").replace(/[";]/g, "").trim())
+    .slice(0, 4);
+
+  buttons.forEach((t, i) => {
+    const b = document.createElement("button");
+    b.textContent = `${i + 1}. ${t}`;
+    b.dataset.index = i;
+    b.onclick = () => sendMessage(t);
+    buttonsDiv.appendChild(b);
+  });
+}
+
+/* =====================
+   KEYBOARD QoL
+===================== */
+document.addEventListener("keydown", e => {
+  if (e.key === "Enter" && document.activeElement === userInput) {
+    e.preventDefault();
+    sendMessage();
+  }
+
+  if (["1","2","3","4"].includes(e.key) && document.activeElement !== userInput) {
+    const btn = buttonsDiv.querySelector(
+      `button[data-index="${parseInt(e.key, 10) - 1}"]`
+    );
+    if (btn) btn.click();
+  }
+});
+
+/* INIT */
+updateThemeUI();
+renderStartIdeas();
+</script>
+
+</body>
+</html>
