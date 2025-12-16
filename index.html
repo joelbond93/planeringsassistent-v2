@@ -8,78 +8,55 @@
 
 <body>
 
-<h1>Planeringsassistent</h1>
+<!-- HEADER -->
+<header id="header">
+  <h1>Planeringsassistent</h1>
 
-<!-- AKTIVT TEMA -->
-<div id="active-theme">
-  <div id="active-theme-inner">
+  <div id="active-theme">
     <span id="active-theme-label">Tema</span>
     <span id="active-theme-value">Inget valt</span>
   </div>
-</div>
+</header>
 
-<!-- TEMA-VÄLJARE -->
-<div id="theme-selector">
-  <select id="conversationTheme" onchange="setConversationTheme()">
-    <option value="">Inget valt tema</option>
-    <option value="travel">Resor</option>
-    <option value="activities">Aktiviteter</option>
-    <option value="food">Mat</option>
-    <option value="projects">Projekt</option>
-    <option value="custom">Eget tema…</option>
-  </select>
-
-  <input
-    id="customThemeInput"
-    type="text"
-    placeholder="Skriv eget tema…"
-    style="display:none;"
-  />
+<!-- TEMA-KNAPPAR -->
+<div id="theme-selector" class="theme-buttons">
+  <button data-theme="travel">Resor</button>
+  <button data-theme="activities">Aktiviteter</button>
+  <button data-theme="food">Mat</button>
+  <button data-theme="projects">Projekt</button>
+  <button data-theme="custom">Eget</button>
+  <input id="customThemeInput" type="text" placeholder="Skriv eget tema…" style="display:none;" />
 </div>
 
 <!-- START -->
-<div id="start-screen">
+<section id="start-screen">
+  <div class="start-cards" id="startIdeas"></div>
+  <p class="start-or">eller skriv själv</p>
 
-  <div id="start-content">
-    <div class="start-card" id="startIdeas"></div>
-    <p class="start-or">eller skriv själv</p>
+  <div class="start-input">
+    <input id="startInput" placeholder="Vad vill du planera?" />
+    <button onclick="startFromInput()">Starta</button>
   </div>
-
-  <div id="start-bottom" class="glass">
-    <div class="start-input">
-      <input id="startInput" type="text" placeholder="Vad vill du planera?" />
-      <button onclick="startFromInput()">Starta</button>
-    </div>
-  </div>
-
-</div>
+</section>
 
 <!-- CHAT -->
-<div id="chat-container" style="display:none;">
+<section id="chat-container" hidden>
+  <div id="messages">
+    <div class="chat-spacer"></div>
+  </div>
 
-  <!-- ✅ VIKTIG FIX: SCROLL-CONTAINER -->
-  <div id="messages"></div>
-
-  <div id="bottom-area" class="glass">
+  <div id="bottom-area">
     <div id="buttons"></div>
 
     <div id="input-area">
-      <input id="userInput" type="text" placeholder="Skriv här…" />
+      <input id="userInput" placeholder="Skriv här…" />
       <button onclick="sendMessage()">Skicka</button>
       <button onclick="resetConversation()">Nollställ</button>
     </div>
   </div>
-
-</div>
+</section>
 
 <script>
-
-  const THEME_LABELS = {
-  food: "Mat",
-  travel: "Resor",
-  activities: "Aktiviteter",
-  projects: "Projekt"
-};
 /* =====================
    STATE
 ===================== */
@@ -91,29 +68,111 @@ const buttonsDiv = document.getElementById("buttons");
 const userInput = document.getElementById("userInput");
 
 /* =====================
-   START-IDÉER
+   THEME LABELS
 ===================== */
-const startIdeas = [
-  { title: "Planera en middag", desc: "Meny och gäster", prompt: "Jag vill planera en middag." },
-  { title: "Planera en resa", desc: "Semester eller weekend", prompt: "Jag vill planera en resa." },
-  { title: "Hitta på något kul", desc: "Något att göra snart", prompt: "Jag vill hitta på något kul." },
-  { title: "Strukturera en idé", desc: "Från tanke till plan", prompt: "Jag har en idé jag vill strukturera." }
-];
+const THEME_LABELS = {
+  travel: "Resor",
+  activities: "Aktiviteter",
+  food: "Mat",
+  projects: "Projekt"
+};
 
+/* =====================
+   START TOPICS (POOLER)
+===================== */
+const START_TOPICS = {
+  travel: [
+    "Planera en resa i Europa",
+    "Hitta ett bra resmål för kort semester",
+    "Resa med liten budget",
+    "Packlista för resa",
+    "Resa med barn",
+    "Spontan weekendresa",
+    "Långresa – hur börjar man?",
+    "Resa ensam"
+  ],
+
+  food: [
+    "Planera en middag",
+    "Vad ska vi äta i veckan?",
+    "Mat till många personer",
+    "Enkel men festlig mat",
+    "Vegetarisk middag",
+    "Snabb vardagsmat",
+    "Planera meny till helg",
+    "Vad kan jag laga av det jag har hemma?"
+  ],
+
+  activities: [
+    "Hitta på något kul i helgen",
+    "Aktivitet med vänner",
+    "Något spontant att göra",
+    "Inomhusaktivitet",
+    "Utomhusaktivitet",
+    "Billig aktivitet",
+    "Något kreativt",
+    "Något avslappnat"
+  ],
+
+  projects: [
+    "Strukturera en idé",
+    "Planera ett projekt",
+    "Komma vidare i ett projekt",
+    "Bryta ner en stor uppgift",
+    "Sätta mål och nästa steg",
+    "Planera tidslinje",
+    "Prioritera bland idéer",
+    "Få ordning på ett sidoprojekt"
+  ],
+
+  default: [
+    "Jag vill planera något",
+    "Hjälp mig strukturera en idé",
+    "Jag vet inte riktigt var jag ska börja",
+    "Jag behöver inspiration",
+    "Hjälp mig tänka klart",
+    "Jag vill komma vidare med något"
+  ]
+};
+
+/* =====================
+   HELPERS
+===================== */
+function pickRandomItems(arr, count) {
+  return arr
+    .slice()
+    .sort(() => Math.random() - 0.5)
+    .slice(0, count);
+}
+
+/* =====================
+   START IDEAS RENDER
+===================== */
 function renderStartIdeas() {
-  const c = document.getElementById("startIdeas");
-  c.innerHTML = "";
+  const container = document.getElementById("startIdeas");
+  container.innerHTML = "";
 
-  [...startIdeas].sort(() => 0.5 - Math.random()).slice(0, 3).forEach(i => {
-    const b = document.createElement("button");
-    b.innerHTML = `<strong>${i.title}</strong><br><span>${i.desc}</span>`;
-    b.onclick = () => startConversation(i.prompt);
-    c.appendChild(b);
+  const pool =
+    lockedTheme && START_TOPICS[lockedTheme]
+      ? START_TOPICS[lockedTheme]
+      : START_TOPICS.default;
+
+  const topics = pickRandomItems(pool, 3);
+
+  topics.forEach(text => {
+    const btn = document.createElement("button");
+
+    btn.innerHTML = `
+      <strong>${text}</strong>
+    `;
+
+    btn.onclick = () => startConversation(text);
+    container.appendChild(btn);
   });
 }
 
 /* =====================
-   START
+   START FLOW
 ===================== */
 function startFromInput() {
   const v = document.getElementById("startInput").value.trim();
@@ -121,13 +180,13 @@ function startFromInput() {
 }
 
 function startConversation(text) {
-  document.getElementById("start-screen").style.display = "none";
-  document.getElementById("chat-container").style.display = "flex";
+  document.getElementById("start-screen").hidden = true;
+  document.getElementById("chat-container").hidden = false;
   sendMessage(text);
 }
 
 /* =====================
-   TEMA
+   THEME HANDLING
 ===================== */
 function updateThemeUI() {
   const label =
@@ -137,24 +196,31 @@ function updateThemeUI() {
 
   document.getElementById("active-theme-value").textContent = label;
   document.body.className = lockedTheme ? `theme-${lockedTheme}` : "";
-  document.getElementById("conversationTheme").value = lockedTheme || "";
 
+  document.querySelectorAll(".theme-buttons button").forEach(b => {
+    b.classList.toggle("active", b.dataset.theme === lockedTheme);
+  });
+
+  renderStartIdeas(); // 👈 VIKTIG
 }
 
-function setConversationTheme() {
-  const s = document.getElementById("conversationTheme");
-  const i = document.getElementById("customThemeInput");
+document.querySelectorAll(".theme-buttons button").forEach(btn => {
+  btn.onclick = () => {
+    const theme = btn.dataset.theme;
+    const input = document.getElementById("customThemeInput");
 
-  if (s.value === "custom") {
-    i.style.display = "inline-block";
-    i.focus();
-    lockedTheme = null;
-  } else {
-    i.style.display = "none";
-    lockedTheme = s.value || null;
+    if (theme === "custom") {
+      lockedTheme = null;
+      input.style.display = "inline-block";
+      input.focus();
+    } else {
+      lockedTheme = theme;
+      input.style.display = "none";
+    }
+
     updateThemeUI();
-  }
-}
+  };
+});
 
 document.getElementById("customThemeInput").addEventListener("keydown", e => {
   if (e.key === "Enter") {
@@ -175,17 +241,6 @@ function addMessage(text, sender) {
   messagesDiv.scrollTop = messagesDiv.scrollHeight;
 }
 
-function resetConversation() {
-  conversation = [];
-  lockedTheme = null;
-  updateThemeUI();
-  messagesDiv.innerHTML = "";
-  buttonsDiv.innerHTML = "";
-  document.getElementById("chat-container").style.display = "none";
-  document.getElementById("start-screen").style.display = "flex";
-  renderStartIdeas();
-}
-
 /* =====================
    SEND MESSAGE
 ===================== */
@@ -194,10 +249,10 @@ async function sendMessage(override = null) {
   if (!text) return;
 
   addMessage(text, "user");
-  addMessage("AI tänker…", "assistant");
-
   userInput.value = "";
   buttonsDiv.innerHTML = "";
+
+  addMessage("AI tänker…", "assistant thinking");
 
   conversation.push({
     role: "user",
@@ -230,17 +285,33 @@ function handleAIResponse(raw) {
 
   addMessage(text.trim(), "assistant");
 
-  const buttons = (btnPart.match(/Knapp:\s*([^;]+);/g) || [])
-    .map(b => b.replace("Knapp:", "").replace(/[";]/g, "").trim())
-    .slice(0, 4);
+  (btnPart.match(/Knapp:\s*([^;]+);/g) || [])
+    .slice(0, 4)
+    .forEach((m, i) => {
+      const t = m.replace("Knapp:", "").replace(/[";]/g, "").trim();
+      const b = document.createElement("button");
+      b.textContent = `${i + 1}. ${t}`;
+      b.dataset.index = i;
+      b.onclick = () => sendMessage(t);
+      buttonsDiv.appendChild(b);
+    });
+}
 
-  buttons.forEach((t, i) => {
-    const b = document.createElement("button");
-    b.textContent = `${i + 1}. ${t}`;
-    b.dataset.index = i;
-    b.onclick = () => sendMessage(t);
-    buttonsDiv.appendChild(b);
-  });
+/* =====================
+   RESET
+===================== */
+function resetConversation() {
+  conversation = [];
+  lockedTheme = null;
+
+  messagesDiv.innerHTML = "";
+  buttonsDiv.innerHTML = "";
+
+  document.getElementById("chat-container").hidden = true;
+  document.getElementById("start-screen").hidden = false;
+
+  updateThemeUI();
+  renderStartIdeas();
 }
 
 /* =====================
@@ -248,22 +319,25 @@ function handleAIResponse(raw) {
 ===================== */
 document.addEventListener("keydown", e => {
   if (e.key === "Enter" && document.activeElement === userInput) {
-    e.preventDefault();
     sendMessage();
+    e.preventDefault();
   }
 
   if (["1","2","3","4"].includes(e.key) && document.activeElement !== userInput) {
     const btn = buttonsDiv.querySelector(
-      `button[data-index="${parseInt(e.key, 10) - 1}"]`
+      `button[data-index="${parseInt(e.key) - 1}"]`
     );
     if (btn) btn.click();
   }
 });
 
-/* INIT */
-updateThemeUI();
+/* =====================
+   INIT
+===================== */
 renderStartIdeas();
+updateThemeUI();
 </script>
+
 
 </body>
 </html>

@@ -1,263 +1,242 @@
 /* =========================
-   GLOBAL – CALM INTELLIGENCE
+   RESET & ROOT
 ========================= */
 
 * {
   box-sizing: border-box;
 }
 
+:root {
+  --chat-bottom-height: 170px;
+}
+
+/* =========================
+   BODY
+========================= */
+
 body {
   margin: 0;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-  background:
-    radial-gradient(1200px 600px at 50% -200px, rgba(59,130,246,0.08), transparent),
-    radial-gradient(800px 400px at 80% 10%, rgba(168,85,247,0.06), transparent),
-    radial-gradient(600px 300px at 20% 20%, rgba(34,197,94,0.04), transparent),
-    #0e0f13;
-  color: #f1f1f1;
+  font-family: system-ui, sans-serif;
+  background: radial-gradient(circle at top, #1a1a1a, #0e0f13);
+  color: white;
   min-height: 100vh;
+  overflow: hidden;
+
+  /* default accent */
+  --accent: #2563eb;
+}
+
+/* =========================
+   HEADER
+========================= */
+
+#header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+
+  background:
+    linear-gradient(
+      180deg,
+      rgba(14,15,19,0.96),
+      rgba(14,15,19,0.92)
+    );
+
+  padding: 14px 12px 16px;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+
+  transition:
+    background 0.25s ease,
+    box-shadow 0.25s ease,
+    border-color 0.25s ease;
+}
+
+body.theme-travel #header,
+body.theme-food #header,
+body.theme-activities #header,
+body.theme-projects #header {
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--accent) 18%, rgba(14,15,19,0.96)),
+      rgba(14,15,19,0.92)
+    );
+
+  border-bottom-color: color-mix(
+    in srgb,
+    var(--accent) 40%,
+    rgba(255,255,255,0.12)
+  );
+
+  box-shadow:
+    0 6px 20px color-mix(in srgb, var(--accent) 30%, transparent);
 }
 
 h1 {
   text-align: center;
-  margin: 20px 0 14px;
-  font-weight: 600;
+  margin: 6px 0;
 }
-
-/* =========================
-   GLASS UTILITY
-========================= */
-
-.glass {
-  background: linear-gradient(
-    180deg,
-    rgba(255,255,255,0.08),
-    rgba(255,255,255,0.03)
-  );
-  border: 1px solid rgba(255,255,255,0.12);
-  backdrop-filter: blur(10px);
-  box-shadow:
-    0 10px 30px rgba(0,0,0,0.4),
-    inset 0 1px 0 rgba(255,255,255,0.06);
-}
-
-/* =========================
-   ACTIVE THEME BAR
-========================= */
 
 #active-theme {
-  width: 100vw;
-  margin: 0 calc(50% - 50vw) 28px;
-  border-top: 1px solid rgba(255,255,255,0.08);
-  border-bottom: 1px solid rgba(255,255,255,0.08);
-}
-
-#active-theme-inner {
-  max-width: 900px;
-  margin: 0 auto;
-  padding: 22px;
   text-align: center;
-}
-
-#active-theme-label {
-  display: block;
-  font-size: 12px;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  opacity: 0.6;
-}
-
-#active-theme-value {
-  display: block;
-  margin-top: 6px;
-  font-size: 22px;
-  font-weight: 600;
+  margin-bottom: 8px;
 }
 
 /* =========================
-   THEME COLORS
-========================= */
-
-body.theme-food #active-theme {
-  background: linear-gradient(
-    180deg,
-    rgba(244,162,97,0.28),
-    rgba(244,162,97,0.06)
-  );
-}
-
-body.theme-travel #active-theme {
-  background: linear-gradient(
-    180deg,
-    rgba(76,201,240,0.28),
-    rgba(76,201,240,0.06)
-  );
-}
-
-body.theme-activities #active-theme {
-  background: linear-gradient(
-    180deg,
-    rgba(167,243,208,0.28),
-    rgba(167,243,208,0.06)
-  );
-}
-
-body.theme-projects #active-theme {
-  background: linear-gradient(
-    180deg,
-    rgba(196,181,253,0.28),
-    rgba(196,181,253,0.06)
-  );
-}
-
-/* =========================
-   THEME SELECTOR
+   THEME BUTTONS
 ========================= */
 
 #theme-selector {
+  margin-top: 20px;
+  margin-bottom: 32px;
+
   display: flex;
   justify-content: center;
-  margin-bottom: 20px;
-  gap: 12px;
+  gap: 10px;
+  flex-wrap: wrap;
 }
 
-#theme-selector select {
-  appearance: none;
-  background: linear-gradient(
-    180deg,
-    rgba(255,255,255,0.08),
-    rgba(255,255,255,0.03)
-  );
-  color: #f1f1f1;
-  border: 1px solid rgba(255,255,255,0.18);
-  border-radius: 14px;
-  padding: 10px 44px 10px 16px;
+.theme-buttons button {
+  padding: 10px 18px;
   font-size: 14px;
-  backdrop-filter: blur(8px);
+  font-weight: 500;
 
-  box-shadow:
-    0 6px 20px rgba(0,0,0,0.45),
-    inset 0 1px 0 rgba(255,255,255,0.06);
-}
-
-#theme-selector select option {
-  background: #16181d;
-  color: #f1f1f1;
-}
-
-#customThemeInput {
-  appearance: none;
-
-  background: linear-gradient(
-    180deg,
-    rgba(255,255,255,0.08),
-    rgba(255,255,255,0.03)
-  );
-  color: #f1f1f1;
-
+  border-radius: 999px;
+  background: rgba(255,255,255,0.06);
   border: 1px solid rgba(255,255,255,0.18);
-  border-radius: 14px;
-  padding: 10px 16px;
+  color: white;
 
-  font-size: 14px;
-  min-width: 180px;
-
-  backdrop-filter: blur(8px);
-
-  box-shadow:
-    0 6px 20px rgba(0,0,0,0.45),
-    inset 0 1px 0 rgba(255,255,255,0.06);
+  cursor: pointer;
 
   transition:
+    background 0.15s ease,
     border-color 0.15s ease,
-    box-shadow 0.15s ease;
+    box-shadow 0.15s ease,
+    transform 0.12s ease;
 }
 
-#customThemeInput::placeholder {
-  color: rgba(241,241,241,0.55);
+.theme-buttons button:hover {
+  transform: translateY(-1px);
 }
 
-#customThemeInput:focus {
-  outline: none;
-  border-color: #3b82f6;
-  box-shadow:
-    0 0 0 1px rgba(59,130,246,0.6),
-    0 10px 30px rgba(0,0,0,0.5);
+/* ACTIVE (valt tema) */
+
+body.theme-travel .theme-buttons button.active {
+  background: rgba(76,201,240,0.35);
+  border-color: rgba(76,201,240,0.9);
+  box-shadow: 0 8px 22px rgba(76,201,240,0.45);
 }
+
+body.theme-food .theme-buttons button.active {
+  background: rgba(244,162,97,0.35);
+  border-color: rgba(244,162,97,0.9);
+  box-shadow: 0 8px 22px rgba(244,162,97,0.45);
+}
+
+body.theme-activities .theme-buttons button.active {
+  background: rgba(167,243,208,0.35);
+  border-color: rgba(167,243,208,0.9);
+  box-shadow: 0 8px 22px rgba(167,243,208,0.45);
+}
+
+body.theme-projects .theme-buttons button.active {
+  background: rgba(196,181,253,0.35);
+  border-color: rgba(196,181,253,0.9);
+  box-shadow: 0 8px 22px rgba(196,181,253,0.45);
+}
+
+/* HOVER – per knapp (egen färg) */
+
+.theme-buttons button[data-theme="travel"]:hover {
+  background: rgba(76,201,240,0.25);
+  border-color: rgba(76,201,240,0.7);
+}
+
+.theme-buttons button[data-theme="food"]:hover {
+  background: rgba(244,162,97,0.28);
+  border-color: rgba(244,162,97,0.7);
+}
+
+.theme-buttons button[data-theme="activities"]:hover {
+  background: rgba(167,243,208,0.28);
+  border-color: rgba(167,243,208,0.7);
+}
+
+.theme-buttons button[data-theme="projects"]:hover {
+  background: rgba(196,181,253,0.28);
+  border-color: rgba(196,181,253,0.7);
+}
+
 /* =========================
    START SCREEN
 ========================= */
 
 #start-screen {
-  display: flex;
-  flex-direction: column;
-  height: calc(100vh - 200px);
+  padding: 40px 16px;
+  text-align: center;
 }
 
-#start-content {
-  flex: 1;
+.start-cards {
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 18px;
-}
-
-.start-card {
-  display: flex;
-  gap: 20px;
-  flex-wrap: wrap;
+  gap: 28px;
   justify-content: center;
+  flex-wrap: wrap;
 }
 
-.start-card button {
-  width: 240px;
-  height: 120px;
-  padding: 16px;
-  border-radius: 16px;
+.start-cards button {
+  width: 300px;
+  height: 160px;
+  padding: 22px;
+
+  border-radius: 22px;
   cursor: pointer;
-  color: white;
 
   background: linear-gradient(
     180deg,
     rgba(255,255,255,0.08),
     rgba(255,255,255,0.03)
   );
-  border: 1px solid rgba(255,255,255,0.12);
+  border: 1px solid rgba(255,255,255,0.14);
+  color: white;
 
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  box-shadow:
+    0 20px 40px rgba(0,0,0,0.45),
+    inset 0 1px 0 rgba(255,255,255,0.06);
+
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-.start-card button:hover {
-  transform: translateY(-2px);
+.start-cards button:hover {
+  transform: translateY(-6px);
 }
 
-/* =========================
-   START – BOTTOM INPUT
-========================= */
-
-#start-bottom {
-  padding: 16px 24px;
-  border-top: 1px solid rgba(255,255,255,0.12);
-}
+/* START INPUT */
 
 .start-input {
+  margin: 40px auto 0;
   display: flex;
-  gap: 10px;
+  gap: 12px;
+  justify-content: center;
+
+  width: 100%;
+  max-width: 720px;
+  padding: 0 16px;
 }
 
 .start-input input {
   flex: 1;
   background: #16181d;
-  border-radius: 12px;
+  border-radius: 14px;
   border: 1px solid rgba(255,255,255,0.16);
   padding: 10px 14px;
   color: white;
+  font-size: 14px;
 }
 
 .start-input button {
-  background: linear-gradient(145deg, #2563eb, #1e40af);
-  border-radius: 12px;
-  padding: 10px 16px;
+  background: linear-gradient(145deg, var(--accent), #1e40af);
+  border-radius: 14px;
+  padding: 10px 18px;
   border: none;
   color: white;
   cursor: pointer;
@@ -268,22 +247,21 @@ body.theme-projects #active-theme {
 ========================= */
 
 #chat-container {
+  height: 100vh;
   display: flex;
   flex-direction: column;
-  height: calc(100vh - 200px);
+  padding-bottom: env(safe-area-inset-bottom);
 }
 
-/* FULL WIDTH CHAT */
 #messages {
   flex: 1;
   overflow-y: auto;
+
+  padding: 24px 16px;
+  padding-bottom: calc(var(--chat-bottom-height) + 24px);
+
   display: flex;
   flex-direction: column;
-
-  padding-left: clamp(16px, 5vw, 48px);
-  padding-right: clamp(16px, 5vw, 48px);
-  padding-top: 24px;
-  padding-bottom: 24px;
 }
 
 /* =========================
@@ -291,82 +269,81 @@ body.theme-projects #active-theme {
 ========================= */
 
 .message {
-  max-width: min(58%, 680px);
-  padding: 14px 18px;
-  margin-bottom: 14px;
-  border-radius: 18px;
-  line-height: 1.5;
+  max-width: 70%;
+  padding: 12px 14px;
+  margin-bottom: 12px;
+
+  line-height: 1.65;
+  font-size: 15.5px;
+
   word-wrap: break-word;
+  white-space: pre-wrap;
 }
 
-/* USER – RIGHT */
+/* USER – HÖGER */
 .message.user {
   align-self: flex-end;
-  background: linear-gradient(145deg, #2563eb, #1e40af);
-  border-bottom-right-radius: 6px;
-  box-shadow: 0 10px 30px rgba(37,99,235,0.35);
+  background: linear-gradient(145deg, var(--accent), #1e40af);
+  color: white;
+  border-radius: 16px 16px 6px 16px;
 }
 
-/* ASSISTANT – LEFT */
+/* ASSISTANT – VÄNSTER */
 .message.assistant {
   align-self: flex-start;
-  background: linear-gradient(
-    180deg,
-    rgba(255,255,255,0.08),
-    rgba(255,255,255,0.03)
-  );
-  border: 1px solid rgba(255,255,255,0.12);
-  border-bottom-left-radius: 6px;
-  backdrop-filter: blur(6px);
+  background: rgba(255,255,255,0.08);
+  border-radius: 16px 16px 16px 6px;
+}
+
+/* THINKING */
+.message.thinking {
+  opacity: 0.6;
+  font-style: italic;
 }
 
 /* =========================
-   CHAT BOTTOM AREA
+   CHAT BOTTOM (STICKY)
 ========================= */
 
-/* =========================
-   CHAT BOTTOM AREA – STICKY
-========================= */
-
-#chat-container #bottom-area {
+#bottom-area {
   position: sticky;
   bottom: 0;
-  z-index: 10;
+  height: var(--chat-bottom-height);
+  padding-bottom: calc(12px + env(safe-area-inset-bottom));
 
-  padding: 16px 24px;
-  border-top: 1px solid rgba(255,255,255,0.12);
-
-  /* säkerställ bakgrund när content scrollar bakom */
   background: linear-gradient(
     180deg,
     rgba(14,15,19,0.85),
     rgba(14,15,19,0.95)
   );
+
+  border-top: 1px solid rgba(255,255,255,0.12);
   backdrop-filter: blur(10px);
 }
 
+/* AI BUTTONS */
+
 #buttons {
+  min-height: 72px;
   display: flex;
-  justify-content: center;
   gap: 12px;
+  justify-content: center;
+  align-items: center;
   flex-wrap: wrap;
-  margin-bottom: 12px;
 }
 
 #buttons button {
-  max-width: 40%;
-  padding: 10px 14px;
-  border-radius: 14px;
-  cursor: pointer;
+  padding: 12px 18px;
+  min-height: 44px;
+  border-radius: 16px;
 
-  background: linear-gradient(
-    180deg,
-    rgba(255,255,255,0.08),
-    rgba(255,255,255,0.03)
-  );
-  border: 1px solid rgba(255,255,255,0.12);
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.18);
   color: white;
+  cursor: pointer;
 }
+
+/* INPUT AREA */
 
 #input-area {
   display: flex;
@@ -375,122 +352,108 @@ body.theme-projects #active-theme {
 
 #input-area input {
   flex: 1;
-  background: #16181d;
-  border-radius: 12px;
+  background: rgba(22,24,29,0.9);
+  border-radius: 14px;
   border: 1px solid rgba(255,255,255,0.16);
   padding: 10px 14px;
   color: white;
 }
 
-#input-area button {
-  background: linear-gradient(145deg, #2563eb, #1e40af);
-  border-radius: 12px;
-  padding: 10px 14px;
+#input-area button:first-of-type {
+  background: linear-gradient(145deg, var(--accent), #1e40af);
+  border-radius: 14px;
+  padding: 10px 16px;
   border: none;
   color: white;
-  cursor: pointer;
 }
+
+#input-area button:last-of-type {
+  background: rgba(255,255,255,0.06);
+  border-radius: 14px;
+  padding: 10px 14px;
+  border: 1px solid rgba(255,255,255,0.14);
+  color: #f1f1f1;
+}
+
+/* =========================
+   THEME ACCENTS
+========================= */
+
+body.theme-food       { --accent: #f4a261; }
+body.theme-travel     { --accent: #4cc9f0; }
+body.theme-activities { --accent: #34d399; }
+body.theme-projects   { --accent: #a78bfa; }
 
 /* =========================
    MOBILE
 ========================= */
 
-@media (max-width: 700px) {
-  .message {
-    max-width: 85%;
-  }
-
-  #active-theme-value {
-    font-size: 18px;
-  }
-}
-
-
-
 /* =========================
-   MOBILE RESPONSIVE
+   MOBILE – FINAL POLISH
 ========================= */
 
 @media (max-width: 700px) {
 
-  /* HEADER */
+  /* ===== HEADER ===== */
+
+  #header {
+    padding: 10px 12px 12px;
+  }
+
   h1 {
     font-size: 18px;
-    margin: 16px 0 10px;
+    margin: 4px 0 6px;
   }
 
-  /* ACTIVE THEME */
-  #active-theme-inner {
-    padding: 14px 16px;
+  #active-theme {
+    font-size: 13px;
   }
 
-  #active-theme-value {
-    font-size: 18px;
-  }
-
-  /* THEME SELECTOR */
   #theme-selector {
+    gap: 8px;
+    margin-top: 16px;
+    margin-bottom: 24px;
+  }
+
+  .theme-buttons button {
+    padding: 8px 14px;
+    font-size: 13px;
+  }
+
+  /* ===== START SCREEN ===== */
+
+  #start-screen {
+    padding: 24px 12px;
+  }
+
+  .start-cards {
     flex-direction: column;
-    align-items: stretch;
-    padding: 0 16px;
-    gap: 10px;
+    gap: 16px;
   }
 
-  #theme-selector select,
-  #customThemeInput {
-    width: 100%;
-  }
-
-  /* START SCREEN */
-  #start-content {
-    padding: 0 16px;
-  }
-
-  .start-card {
-    flex-direction: column;
-    width: 100%;
-  }
-
-  .start-card button {
+  .start-cards button {
     width: 100%;
     height: auto;
+    padding: 18px;
+    border-radius: 18px;
   }
 
-  /* CHAT MESSAGES */
-  #messages {
-    padding-left: 16px;
-    padding-right: 16px;
+  .start-cards strong {
+    font-size: 15px;
   }
 
-  .message {
-    max-width: 92%;
-    font-size: 14px;
+  .start-cards span {
+    font-size: 13px;
   }
 
-  /* AI BUTTONS */
-  #buttons {
-    flex-direction: column;
-    gap: 10px;
+  .start-or {
+    margin: 12px 0 4px;
+    font-size: 13px;
   }
 
-  #buttons button {
-    max-width: 100%;
-    width: 100%;
-  }
-
-  /* INPUT AREA */
-  #input-area {
-    flex-direction: column;
-  }
-
-  #input-area input,
-  #input-area button {
-    width: 100%;
-  }
-
-  /* START INPUT */
   .start-input {
-    flex-direction: column;
+    margin-top: 24px;
+    padding: 0;
   }
 
   .start-input input,
@@ -498,18 +461,96 @@ body.theme-projects #active-theme {
     width: 100%;
   }
 
-  /* BOTTOM AREA – TOUCH FRIENDLY */
-  #bottom-area,
-  #start-bottom {
-    padding: 14px 16px;
+  .start-input {
+    flex-direction: column;
+    gap: 10px;
   }
+
+  /* ===== CHAT ===== */
+
+  #chat-container {
+    height: 100dvh; /* viktigt för mobil */
+  }
+
+  #messages {
+    padding-left: 12px;
+    padding-right: 12px;
+    padding-top: 16px;
+
+    /* 👇 så sista bubblan aldrig hamnar bakom input */
+      padding-bottom: calc(var(--chat-bottom-height) + 64px);
+  }
+  .chat-spacer {
+  height: 48px; /* justera till 32 / 48 / 64 efter smak */
+  flex-shrink: 0;
 }
 
+  #messages::after {
+  content: "";
+  display: block;
 
-#chat-container {
-  padding-bottom: env(safe-area-inset-bottom);
+  /* 👇 extra visuell luft ovanför bottom chat */
+  height: 28px;
+}
+.message {
+  margin-bottom: 12px;
 }
 
-#bottom-area {
-  padding-bottom: calc(16px + env(safe-area-inset-bottom));
+.message:last-child {
+  margin-bottom: 0; /* 👈 vi låter ::after stå för luften */
+}
+
+  /* ===== CHAT BUBBLES ===== */
+
+  .message {
+    max-width: 92%;
+    font-size: 16px;
+    line-height: 1.7;
+    padding: 12px 14px;
+  }
+
+  .message.user {
+    margin-left: auto;
+    margin-right: 0;
+  }
+
+  .message.assistant {
+    margin-right: auto;
+    margin-left: 0;
+  }
+
+  /* ===== BOTTOM BAR ===== */
+
+  #bottom-area {
+    padding: 10px 12px 12px;
+  }
+
+  #buttons {
+    flex-direction: column;
+    gap: 10px;
+    min-height: 80px; /* behåller höjd även utan knappar */
+  }
+
+  #buttons button {
+    width: 100%;
+    font-size: 14px;
+    padding: 14px 16px;
+    border-radius: 16px;
+  }
+
+  #input-area {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  #input-area input {
+    font-size: 16px; /* 👈 viktigt för iOS zoom-bug */
+    padding: 12px 14px;
+  }
+
+  #input-area button {
+    width: 100%;
+    padding: 12px 16px;
+    font-size: 15px;
+  }
 }
