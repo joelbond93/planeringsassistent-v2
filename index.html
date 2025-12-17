@@ -64,10 +64,13 @@
 ===================== */
 let conversation = [];
 let lockedTheme = null;
+let customThemeLabel = "";     // (som vi redan identifierat)
+let customStartCards = null;  // 👈 HÄR
 
 const messagesDiv = document.getElementById("messages");
 const buttonsDiv = document.getElementById("buttons");
 const userInput = document.getElementById("userInput");
+const customThemeInput = document.getElementById("customThemeInput"); // 👈 HÄR
 
 /* =====================
    THEME LABELS
@@ -83,16 +86,36 @@ const THEME_LABELS = {
    START TOPICS
 ===================== */
 const START_TOPICS = {
-  travel: ["Planera en resa", "Weekendresa", "Resa på budget"],
-  food: ["Planera en middag", "Vad ska vi äta?", "Meny till helg"],
-  activities: ["Hitta på något kul", "Aktivitet i helgen", "Spontan idé"],
-  projects: ["Strukturera en idé", "Planera projekt", "Nästa steg"],
-  default: ["Jag vill planera något", "Hjälp mig tänka", "Jag behöver struktur"]
+  travel: {
+    quick: "Planera en resa",
+    open: "Jag vill resa men vet inte vart",
+    specific: "Resa utan datum eller budget"
+  },
+  food: {
+    quick: "Planera en middag",
+    open: "Vad ska vi äta?",
+    specific: "Meny för flera dagar"
+  },
+  activities: {
+    quick: "Hitta på något kul",
+    open: "Jag vill göra något men vet inte vad",
+    specific: "Aktivitet i helgen"
+  },
+  projects: {
+    quick: "Strukturera en idé",
+    open: "Jag har för många lösa trådar",
+    specific: "Nästa steg i ett projekt"
+  },
+  default: {
+    quick: "Jag vill planera något",
+    open: "Hjälp mig tänka",
+    specific: "Ta fram nästa rimliga steg"
+  }
 };
 
-function pickRandom(arr, n) {
-  return arr.sort(() => Math.random() - 0.5).slice(0, n);
-}
+// function pickRandom(arr, n) {
+//   return arr.sort(() => Math.random() - 0.5).slice(0, n);
+// }
 
 /* =====================
    START RENDER
@@ -101,13 +124,77 @@ function renderStartIdeas() {
   const c = document.getElementById("startIdeas");
   c.innerHTML = "";
 
-  const pool = START_TOPICS[lockedTheme] || START_TOPICS.default;
-  pickRandom(pool, 3).forEach(text => {
+  let cards;
+
+  if (lockedTheme === "custom") {
+    if (customStartCards === "loading") {
+      cards = [
+        "Skapar förslag…",
+        "Tänker på möjliga ingångar…",
+        "Förbereder nästa steg…"
+      ];
+    } else if (Array.isArray(customStartCards)) {
+      cards = customStartCards;
+    } else {
+      const topics = START_TOPICS.default;
+      cards = [topics.quick, topics.open, topics.specific];
+    }
+  } else {
+    const topics = START_TOPICS[lockedTheme] || START_TOPICS.default;
+    cards = [topics.quick, topics.open, topics.specific];
+  }
+
+  cards.forEach(text => {
     const b = document.createElement("button");
     b.innerHTML = `<strong>${text}</strong>`;
-    b.onclick = () => startConversation(text);
+
+    // ⛔ disable klick under loading
+    if (customStartCards === "loading") {
+      b.disabled = true;
+      b.style.opacity = "0.55";
+      b.style.cursor = "default";
+    } else {
+      b.onclick = () => startConversation(text);
+    }
+
     c.appendChild(b);
   });
+}
+
+/* =====================
+   CUSTOM START CARDS (AI)
+===================== */
+async function generateCustomStartCards(theme) {
+  const prompt = `
+Skapa tre korta startförslag för planering inom temat: "${theme}".
+
+Roller:
+1. Snabb start
+2. Öppen tanke
+3. Mer riktad ingång
+
+Regler:
+- 4–8 ord per förslag
+- inga frågor
+- neutralt och lugnt språk
+- inga emojis
+
+Returnera exakt tre rader, utan extra text.
+`;
+
+  const res = await fetch("/api/custom-start", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ prompt })
+  });
+
+  const data = await res.json();
+
+  if (!Array.isArray(data.cards) || data.cards.length !== 3) {
+    throw new Error("Invalid custom cards response");
+  }
+
+  return data.cards;
 }
 
 /* =====================
@@ -151,31 +238,47 @@ function updateThemeUI() {
 
 document.querySelectorAll(".theme-buttons button").forEach(btn => {
   btn.onclick = () => {
-    if (btn.dataset.theme === "custom") {
-      lockedTheme = null;
-      customThemeInput.style.display = "inline-block";
-      customThemeInput.focus();
-    } else {
-      lockedTheme = btn.dataset.theme;
-      customThemeInput.style.display = "none";
-    }
-    updateThemeUI();
-    renderStartIdeas(); // ✅ VIKTIG RAD
-  };
+  if (btn.dataset.theme === "custom") {
+    lockedTheme = null;
+    customThemeInput.style.display = "inline-block";
+    customThemeInput.focus();
+  } else {
+    lockedTheme = btn.dataset.theme;
+    customThemeInput.style.display = "none";
+    customStartCards = null; // 👈 VIKTIGT
+    customThemeLabel = "";
+  }
+
+  updateThemeUI();
+  renderStartIdeas();
+};
 });
 
-document.getElementById("customThemeInput").addEventListener("keydown", e => {
-  if (e.key === "Enter") {
-    const value = e.target.value.trim();
-    if (!value) return;
+document.getElementById("customThemeInput").addEventListener("keydown", async e => {
+  if (e.key !== "Enter") return;
 
-    lockedTheme = "custom";
-    customThemeLabel = value;
+  // 🛑 skydd mot dubbel-trigger medan AI jobbar
+  if (customStartCards === "loading") return;
 
-    e.target.blur();
-    updateThemeUI();
-    renderStartIdeas(); // ✅ VIKTIG RAD
+  const value = e.target.value.trim();
+  if (!value) return;
+
+  lockedTheme = "custom";
+  customThemeLabel = value;
+  customStartCards = "loading"; // 👈 markerar pågående AI-jobb
+
+  e.target.blur();
+  updateThemeUI();
+  renderStartIdeas(); // (kan visa placeholders senare)
+
+  try {
+    customStartCards = await generateCustomStartCards(value);
+  } catch (err) {
+    console.warn("Custom start cards failed", err);
+    customStartCards = null;
   }
+
+  renderStartIdeas(); // ✅ rendera igen när klart
 });
 
 
@@ -245,6 +348,7 @@ function resetConversation() {
   conversation = [];
   lockedTheme = null;
   customThemeLabel = "";
+  customStartCards = null; // 👈 lägg till
   updateThemeUI();
 
   messagesDiv.innerHTML = "";

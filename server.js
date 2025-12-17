@@ -103,6 +103,39 @@ app.post("/api/chat", async (req, res) => {
   }
 });
 
+app.post("/api/custom-start", async (req, res) => {
+  const { prompt } = req.body;
+
+  if (!prompt) {
+    return res.status(400).json({ cards: null });
+  }
+
+  const messages = [
+    {
+      role: "system",
+      content: "Du genererar endast startförslag, aldrig konversation."
+    },
+    {
+      role: "user",
+      content: prompt
+    }
+  ];
+
+  try {
+    const text = await callOpenAI(messages);
+    const cards = text
+      .split("\n")
+      .map(l => l.trim())
+      .filter(Boolean)
+      .slice(0, 3);
+
+    res.json({ cards });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ cards: null });
+  }
+});
+
 /* =====================
    START SERVER (ENDA)
 ===================== */
