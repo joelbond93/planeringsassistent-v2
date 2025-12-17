@@ -606,6 +606,23 @@ body.theme-custom .theme-buttons button[data-theme="custom"].active {
 
 
 @media (max-width: 640px) {
+
+  /* ---------- HEADER ---------- */
+  #header {
+    padding: 12px 0 6px;
+    box-shadow: none;
+  }
+
+  #header h1 {
+    font-size: 20px;
+  }
+
+  #header::before {
+    opacity: 0.5;
+    height: 80px;
+  }
+
+  /* ---------- START ---------- */
   .start-cards {
     flex-direction: column;
     gap: 16px;
@@ -614,59 +631,91 @@ body.theme-custom .theme-buttons button[data-theme="custom"].active {
 
   .start-cards button {
     width: 100%;
-    height: auto;
-    padding: 18px 16px;
+    padding: 16px 14px;
+    border-radius: 16px;
+  }
+
+  .start-cards strong {
+    font-size: 16px;
+  }
+
+  .start-input {
+    padding: 0 16px;
+  }
+
+  .start-input input {
+    font-size: 16px; /* stoppar iOS-zoom */
+  }
+
+  /* ---------- CHAT MESSAGES ---------- */
+  .message {
+    max-width: 90%;
+    font-size: 15px;
+    line-height: 1.55;
+    margin-bottom: 12px;
+  }
+
+  /* ---------- BOTTOM AREA ---------- */
+  #bottom-area {
+    height: auto;                 /* 👈 KRITISKT */
+    min-height: unset;
+    max-height: unset;
+
+    padding-top: 10px;
+    padding-bottom: calc(20px + env(safe-area-inset-bottom));
+  }
+
+  /* ---------- AI BUTTONS (2×2 GRID) ---------- */
+  #buttons {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+
+    padding: 0 20px;
+    margin-bottom: 12px;
+  }
+
+  #buttons button {
+    width: 100%;
+    box-sizing: border-box;
+
+    padding: 6px 6px;
+    font-size: 12px;
+    line-height: 1.2;
+    font-weight: 450;
+    text-align: center;
+
+    border-radius: 12px;
+    box-shadow: none;
+  }
+
+  /* ---------- INPUT AREA ---------- */
+  #input-area {
+    padding: 0 16px;
+    margin-bottom: 8px;
+    gap: 8px;
+  }
+
+  #input-area input {
+    font-size: 16px; /* stoppar iOS-zoom */
   }
 }
 
+/* ---------- TOUCH DEVICES ---------- */
 @media (hover: none) {
   .start-cards button:hover,
   #buttons button:hover {
     transform: none;
     box-shadow: inherit;
   }
-}
+} 
 
 @media (max-width: 640px) {
-  #buttons {
-    gap: 12px;
+  .start-cards button {
+    padding: 14px 12px;   /* ↓ från 16px 14px */
   }
 
-  #buttons button {
-    width: 100%;
-    min-width: unset;
-    padding: 18px 16px;
-    font-size: 16px;
-  }
-}
-
-@media (max-width: 640px) {
-  #input-area input,
-  .start-input input {
-    font-size: 16px; /* förhindrar zoom */
-  }
-}
-
-@media (max-width: 640px) {
-  #input-area {
-    gap: 8px;
-  }
-}
-
-@media (max-width: 640px) {
-  #header {
-    padding-top: 12px;
-    padding-bottom: 6px;
-  }
-
-  #header h1 {
-    font-size: 20px;
-  }
-}
-
-@media (max-width: 640px) {
-  .message {
-    max-width: 90%;
-    font-size: 15px;
+    .start-cards strong {
+    font-size: 15px;      /* ↓ från 16px */
   }
 }
