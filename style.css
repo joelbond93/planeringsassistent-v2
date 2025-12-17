@@ -1,94 +1,67 @@
-/* =========================
-   RESET & ROOT
-========================= */
+* { box-sizing: border-box; }
 
-* {
-  box-sizing: border-box;
+:root {
+  --header-height: 140px;   /* justera om din header ändras */
+  --bottom-height: 200px;   /* din input + knappar */
 }
 
 :root {
-  --chat-bottom-height: 170px;
+  --accent-custom: #f472b6; /* rosa/lila – tydlig men mjuk */
 }
-
-/* =========================
-   BODY
-========================= */
 
 body {
   margin: 0;
   font-family: system-ui, sans-serif;
   background: radial-gradient(circle at top, #1a1a1a, #0e0f13);
   color: white;
-  min-height: 100vh;
-  overflow: hidden;
 
-  /* default accent */
-  --accent: #2563eb;
+  height: 100vh;          /* 🔥 VIKTIGT – inte min-height */
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
 
-/* =========================
-   HEADER
-========================= */
 
+/* HEADER */
 #header {
-  position: sticky;
+  position: relative;
   top: 0;
   z-index: 10;
+  text-align: center;
+  padding-bottom: 8px;
 
-  background:
-    linear-gradient(
-      180deg,
-      rgba(14,15,19,0.96),
-      rgba(14,15,19,0.92)
-    );
+  background: rgba(14,15,19,0.95);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.144);
 
-  padding: 14px 12px 16px;
-  border-bottom: 1px solid rgba(255,255,255,0.08);
-
-  transition:
-    background 0.25s ease,
-    box-shadow 0.25s ease,
-    border-color 0.25s ease;
+  box-shadow: none;
+  transition: box-shadow 0.25s ease, border-color 0.25s ease;
 }
+#header::before {
+  content: "";
+  position: absolute;
+  top: -20px;
+  left: 50%;
+  transform: translateX(-50%);
 
-body.theme-travel #header,
-body.theme-food #header,
-body.theme-activities #header,
-body.theme-projects #header {
-  background:
-    linear-gradient(
-      180deg,
-      color-mix(in srgb, var(--accent) 18%, rgba(14,15,19,0.96)),
-      rgba(14,15,19,0.92)
-    );
+  width: 520px;
+  height: 120px;
 
-  border-bottom-color: color-mix(
-    in srgb,
-    var(--accent) 40%,
-    rgba(255,255,255,0.12)
+  background: radial-gradient(
+    ellipse at center,
+    color-mix(in srgb, var(--accent) 28%, transparent),
+    transparent 70%
   );
 
-  box-shadow:
-    0 6px 20px color-mix(in srgb, var(--accent) 30%, transparent);
-}
+  pointer-events: none;
+  filter: blur(14px);
+  opacity: 0.9;
 
-h1 {
-  text-align: center;
-  margin: 6px 0;
+  z-index: -1;
 }
-
-#active-theme {
-  text-align: center;
-  margin-bottom: 8px;
-}
-
-/* =========================
-   THEME BUTTONS
-========================= */
 
 #theme-selector {
-  margin-top: 20px;
-  margin-bottom: 32px;
+  margin-top: 20px;      /* 👈 flyttar ner från header */
+  margin-bottom: 24px;   /* 👈 luft ner mot innehållet */
 
   display: flex;
   justify-content: center;
@@ -96,6 +69,361 @@ h1 {
   flex-wrap: wrap;
 }
 
+/* MAIN */
+#main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* START */
+#start-screen {
+  flex: 1;
+  text-align: center;
+  padding-top: 60px;
+}
+
+.start-cards {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+
+  gap: 36px;              /* 👈 mer luft mellan korten */
+  margin-top: 40px;       /* 👈 luft från temat ovanför */
+  margin-bottom: 36px;
+}
+
+.start-cards button::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    120deg,
+    transparent 30%,
+    rgba(255,255,255,0.08),
+    transparent 70%
+  );
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+
+.start-cards button:hover::before {
+  opacity: 1;
+}
+
+.start-cards button {
+  position: relative;
+  overflow: hidden;
+
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease,
+    border-color 0.25s ease;
+}
+
+.start-cards button:hover {
+  transform: translateY(-6px) scale(1.02);
+  border-color: var(--accent);
+  box-shadow:
+    0 24px 50px rgba(0,0,0,0.55),
+    0 0 0 1px color-mix(in srgb, var(--accent) 40%, transparent);
+}
+
+.start-cards button {
+  width: 280px;
+  height: 140px;
+  border-radius: 20px;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.14);
+  color: white;
+  cursor: pointer;
+}
+
+.start-cards button::after {
+  content: "";
+  position: absolute;
+  inset: auto 20px 14px 20px;
+  height: 3px;
+
+  border-radius: 999px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--accent),
+    transparent
+  );
+
+  opacity: 0.5;
+}
+
+.start-cards strong {
+  font-size: 17px;
+  letter-spacing: 0.2px;
+}
+
+.start-cards span {
+  font-size: 13px;
+  opacity: 0.75;
+  margin-top: 6px;
+  display: block;
+}
+
+/* START INPUT – matchar chatten men mindre */
+.start-input {
+  margin: 32px auto 0;
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+
+  width: 100%;
+  max-width: 560px;   /* 👈 mindre än chat */
+  padding: 0 16px;
+}
+
+.start-input input {
+  flex: 1;
+
+  background: rgba(22,24,29,0.95);
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.14);
+
+  padding: 9px 12px;          /* 👈 lite mindre */
+  font-size: 14px;
+
+  color: white;
+  outline: none;
+
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.start-input input:focus {
+  border-color: var(--accent, #2563eb);
+  box-shadow:
+    0 0 0 1px rgba(59,130,246,0.45),
+    0 8px 24px rgba(0,0,0,0.35);
+}
+
+.start-input button {
+  background: linear-gradient(
+    145deg,
+    var(--accent, #2563eb),
+    #1e40af
+  );
+
+  border-radius: 12px;
+  padding: 9px 14px;      /* 👈 mindre än chat */
+  border: none;
+
+  font-size: 14px;
+  font-weight: 500;
+  color: white;
+
+  cursor: pointer;
+
+  box-shadow: 0 8px 22px rgba(37,99,235,0.35);
+}
+
+.start-input button:hover {
+  filter: brightness(1.08);
+  transform: translateY(-1px);
+}
+
+/* CHAT */
+#chat-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0; /* 👈 superviktigt för scroll */
+}
+
+#messages {
+  #messages {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;   /* 👈 viktigt */
+}
+  flex: 1;
+  min-height: 0;          /* 🔥 ABSOLUT NÖDVÄNDIG */
+  overflow-y: auto;
+
+  padding: 24px 16px;
+  padding-bottom: 24px;  /* luft mot bottom */
+}
+
+/* MESSAGES */
+.message {
+  display: inline-block;
+  max-width: 75%;
+  padding: 10px 14px;
+  margin-bottom: 10px;
+
+  line-height: 1.6;
+  font-size: 15.5px;
+
+  white-space: pre-wrap;
+  word-break: break-word;
+
+  border-radius: 18px;
+}
+
+.message.user {
+  align-self: flex-end;
+  max-width: fit-content;
+
+  background: linear-gradient(
+    145deg,
+    var(--accent),
+    color-mix(in srgb, var(--accent) 70%, black)
+  );
+
+  color: white;
+  border-radius: 16px 16px 6px 16px;
+
+  padding: 12px 14px;
+
+  box-shadow:
+    0 8px 24px color-mix(in srgb, var(--accent) 40%, transparent);
+}
+
+.message.assistant {
+  align-self: flex-start;
+  max-width: fit-content;
+
+  background:
+    linear-gradient(
+      180deg,
+      rgba(255,255,255,0.09),
+      rgba(255,255,255,0.03)
+    );
+
+  border: 1px solid
+    color-mix(in srgb, var(--accent) 35%, rgba(255,255,255,0.12));
+
+  color: #f1f1f1;
+  border-radius: 16px 16px 16px 6px;
+
+  padding: 12px 14px;
+}
+
+.message.thinking {
+  opacity: 0.55;
+  font-style: italic;
+}
+
+/* BOTTOM */
+#bottom-area {
+  flex-shrink: 0;
+
+  padding: 16px 16px 18px;
+  min-height: 200px;     /* 👈 reserverar plats */
+  max-height: 200px;     /* 👈 låser höjden */
+
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+
+  background: linear-gradient(
+    180deg,
+    rgba(14,15,19,0.88),
+    rgba(14,15,19,0.97)
+  );
+
+  border-top: 1px solid rgba(255,255,255,0.14);
+  backdrop-filter: blur(12px);
+}
+
+#buttons {
+  min-height: 96px;     /* 👈 plats för 2 rader knappar */
+  display: flex;
+  gap: 14px;
+
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+#buttons button {
+  min-width: 240px;
+  max-width: 360px;
+  padding: 16px 20px;
+
+  border-radius: 18px;
+  cursor: pointer;
+  text-align: center;
+
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1.4;
+
+  background: linear-gradient(
+    180deg,
+    rgba(255,255,255,0.10),
+    rgba(255,255,255,0.04)
+  );
+  border: 1px solid rgba(255,255,255,0.18);
+  color: white;
+
+  box-shadow:
+    0 14px 30px rgba(0,0,0,0.45),
+    inset 0 1px 0 rgba(255,255,255,0.08);
+
+  transition:
+    transform 0.18s ease,
+    box-shadow 0.18s ease,
+    border-color 0.18s ease,
+    background 0.18s ease;
+}
+
+#buttons button:hover {
+  transform: translateY(-3px);
+  border-color: rgba(59,130,246,0.6);
+  background: linear-gradient(
+    180deg,
+    rgba(59,130,246,0.22),
+    rgba(59,130,246,0.08)
+  );
+}
+
+#input-area {
+  display: flex;
+  gap: 10px;
+
+  max-width: 760px;   /* 👈 lite längre än start-input */
+  width: 100%;
+  margin: 0 auto;     /* 👈 centrerad */
+
+  flex-shrink: 0;
+}
+
+#input-area input {
+  flex: 1;
+  padding: 9px 12px;     /* 👈 mindre höjd */
+  border-radius: 12px;
+  font-size: 14px;
+  border: 1px solid rgba(255,255,255,0.16);
+  background: #16181d;
+  color: white;
+}
+
+#input-area button {
+  padding: 10px 16px;
+  border-radius: 12px;
+  border: none;
+  cursor: pointer;
+}
+
+#input-area button:first-of-type {
+  background: linear-gradient(145deg, var(--accent, #2563eb), #1e40af);
+  color: white;
+    padding: 8px 14px;     /* 👈 mindre knapp */
+  font-size: 14px;
+
+  border-radius: 12px;
+  min-width: 72px;       /* 👈 hindrar krymp */
+}
 .theme-buttons button {
   padding: 10px 18px;
   font-size: 14px;
@@ -115,442 +443,160 @@ h1 {
     transform 0.12s ease;
 }
 
-.theme-buttons button:hover {
+/* .theme-buttons button:hover {
   transform: translateY(-1px);
-}
+  background: rgba(255,255,255,0.1);
+} */
 
-/* ACTIVE (valt tema) */
-
-body.theme-travel .theme-buttons button.active {
-  background: rgba(76,201,240,0.35);
-  border-color: rgba(76,201,240,0.9);
-  box-shadow: 0 8px 22px rgba(76,201,240,0.45);
-}
-
-body.theme-food .theme-buttons button.active {
-  background: rgba(244,162,97,0.35);
-  border-color: rgba(244,162,97,0.9);
-  box-shadow: 0 8px 22px rgba(244,162,97,0.45);
-}
-
-body.theme-activities .theme-buttons button.active {
-  background: rgba(167,243,208,0.35);
-  border-color: rgba(167,243,208,0.9);
-  box-shadow: 0 8px 22px rgba(167,243,208,0.45);
-}
-
-body.theme-projects .theme-buttons button.active {
-  background: rgba(196,181,253,0.35);
-  border-color: rgba(196,181,253,0.9);
-  box-shadow: 0 8px 22px rgba(196,181,253,0.45);
-}
-
-/* HOVER – per knapp (egen färg) */
-
+/* ✈️ RESOR */
 .theme-buttons button[data-theme="travel"]:hover {
   background: rgba(76,201,240,0.25);
   border-color: rgba(76,201,240,0.7);
+  box-shadow: 0 6px 18px rgba(76,201,240,0.35);
+  transform: translateY(-1px);
 }
 
+/* 🍲 MAT */
 .theme-buttons button[data-theme="food"]:hover {
   background: rgba(244,162,97,0.28);
   border-color: rgba(244,162,97,0.7);
+  box-shadow: 0 6px 18px rgba(244,162,97,0.35);
+  transform: translateY(-1px);
 }
 
+/* 🎯 AKTIVITETER */
 .theme-buttons button[data-theme="activities"]:hover {
   background: rgba(167,243,208,0.28);
   border-color: rgba(167,243,208,0.7);
+  box-shadow: 0 6px 18px rgba(167,243,208,0.35);
+  transform: translateY(-1px);
 }
 
+/* 🧠 PROJEKT */
 .theme-buttons button[data-theme="projects"]:hover {
   background: rgba(196,181,253,0.28);
   border-color: rgba(196,181,253,0.7);
+  box-shadow: 0 6px 18px rgba(196,181,253,0.35);
+  transform: translateY(-1px);
 }
 
-/* =========================
-   START SCREEN
-========================= */
-
-#start-screen {
-  padding: 40px 16px;
-  text-align: center;
+/* ✨ EGET */
+.theme-buttons button[data-theme="custom"]:hover {
+  background: rgba(244,114,182,0.25);
+  border-color: rgba(244,114,182,0.7);
+  box-shadow: 0 6px 18px rgba(244,114,182,0.35);
+  transform: translateY(-1px);
 }
 
-.start-cards {
-  display: flex;
-  gap: 28px;
-  justify-content: center;
-  flex-wrap: wrap;
+.theme-buttons button.active {
+  background: linear-gradient(145deg, var(--accent, #2563eb), #1e40af);
+  border-color: rgba(255,255,255,0.4);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.35);
 }
 
-.start-cards button {
-  width: 300px;
-  height: 160px;
-  padding: 22px;
 
-  border-radius: 22px;
-  cursor: pointer;
-
-  background: linear-gradient(
-    180deg,
-    rgba(255,255,255,0.08),
-    rgba(255,255,255,0.03)
-  );
-  border: 1px solid rgba(255,255,255,0.14);
-  color: white;
-
-  box-shadow:
-    0 20px 40px rgba(0,0,0,0.45),
-    inset 0 1px 0 rgba(255,255,255,0.06);
-
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+/* THEMES */
+body.theme-food { --accent: #f4a261; }
+body.theme-travel { --accent: #4cc9f0; }
+body.theme-activities { --accent: #34d399; }
+body.theme-projects { --accent: #a78bfa; }
+body.theme-custom {
+  --accent: #f472b6; /* rosa/lila */
 }
 
-.start-cards button:hover {
-  transform: translateY(-6px);
-}
-
-/* START INPUT */
-
-.start-input {
-  margin: 40px auto 0;
-  display: flex;
-  gap: 12px;
-  justify-content: center;
-
-  width: 100%;
-  max-width: 720px;
-  padding: 0 16px;
-}
-
-.start-input input {
-  flex: 1;
-  background: #16181d;
-  border-radius: 14px;
-  border: 1px solid rgba(255,255,255,0.16);
-  padding: 10px 14px;
-  color: white;
-  font-size: 14px;
-}
-
-.start-input button {
-  background: linear-gradient(145deg, var(--accent), #1e40af);
-  border-radius: 14px;
-  padding: 10px 18px;
-  border: none;
-  color: white;
-  cursor: pointer;
-}
-
-/* =========================
-   CHAT LAYOUT
-========================= */
-
-#chat-container {
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
-  padding-bottom: env(safe-area-inset-bottom);
+#chat-container[hidden] {
+  display: none !important;
 }
 
 #messages {
-  flex: 1;
-  overflow-y: auto;
-
-  padding: 24px 16px;
-  padding-bottom: calc(var(--chat-bottom-height) + 24px);
-
   display: flex;
-  flex-direction: column;
+  flex-direction: column !important;
+  align-items: stretch;
 }
 
-/* =========================
-   CHAT BUBBLES
-========================= */
-
-.message {
-  max-width: 70%;
-  padding: 12px 14px;
-  margin-bottom: 12px;
-
-  line-height: 1.65;
-  font-size: 15.5px;
-
-  word-wrap: break-word;
-  white-space: pre-wrap;
+/* ✈️ RESOR */
+body.theme-travel #header {
+  border-bottom-color: rgba(76,201,240,0.55);
+  box-shadow:
+    0 2px 0 rgba(76,201,240,0.8),
+    0 8px 24px rgba(76,201,240,0.25);
 }
 
-/* USER – HÖGER */
-.message.user {
-  align-self: flex-end;
-  background: linear-gradient(145deg, var(--accent), #1e40af);
-  color: white;
-  border-radius: 16px 16px 6px 16px;
+/* 🎯 AKTIVITETER */
+body.theme-activities #header {
+  border-bottom-color: rgba(52,211,153,0.55);
+  box-shadow:
+    0 2px 0 rgba(52,211,153,0.8),
+    0 8px 24px rgba(52,211,153,0.25);
 }
 
-/* ASSISTANT – VÄNSTER */
-.message.assistant {
-  align-self: flex-start;
-  background: rgba(255,255,255,0.08);
-  border-radius: 16px 16px 16px 6px;
+/* 🍲 MAT */
+body.theme-food #header {
+  border-bottom-color: rgba(244,162,97,0.55);
+  box-shadow:
+    0 2px 0 rgba(244,162,97,0.8),
+    0 8px 24px rgba(244,162,97,0.25);
 }
 
-/* THINKING */
-.message.thinking {
-  opacity: 0.6;
-  font-style: italic;
+/* 🧠 PROJEKT */
+body.theme-projects #header {
+  border-bottom-color: rgba(167,139,250,0.55);
+  box-shadow:
+    0 2px 0 rgba(167,139,250,0.8),
+    0 8px 24px rgba(167,139,250,0.25);
 }
 
-/* =========================
-   CHAT BOTTOM (STICKY)
-========================= */
-
-#bottom-area {
-  position: sticky;
-  bottom: 0;
-  height: var(--chat-bottom-height);
-  padding-bottom: calc(12px + env(safe-area-inset-bottom));
-
-  background: linear-gradient(
-    180deg,
-    rgba(14,15,19,0.85),
-    rgba(14,15,19,0.95)
-  );
-
-  border-top: 1px solid rgba(255,255,255,0.12);
-  backdrop-filter: blur(10px);
+body.theme-custom #header {
+  border-bottom-color: color-mix(in srgb, var(--accent) 55%, transparent);
+  box-shadow:
+    0 2px 0 color-mix(in srgb, var(--accent) 85%, transparent),
+    0 8px 24px color-mix(in srgb, var(--accent) 25%, transparent);
+}
+body.theme-custom #active-theme-value {
+  color: #f472b6;
 }
 
-/* AI BUTTONS */
-
-#buttons {
-  min-height: 72px;
-  display: flex;
-  gap: 12px;
-  justify-content: center;
-  align-items: center;
-  flex-wrap: wrap;
-}
-
-#buttons button {
-  padding: 12px 18px;
-  min-height: 44px;
-  border-radius: 16px;
-
-  background: rgba(255,255,255,0.08);
+#customThemeInput {
+  background: #16181d;
+  border-radius: 999px; /* matchar tema-knapparnas form */
   border: 1px solid rgba(255,255,255,0.18);
+
+  padding: 8px 14px;
   color: white;
-  cursor: pointer;
+  font-size: 14px;
+
+  outline: none;
+  min-width: 200px;
+
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease,
+    background 0.15s ease;
 }
 
-/* INPUT AREA */
-
-#input-area {
-  display: flex;
-  gap: 10px;
+#customThemeInput::placeholder {
+  color: rgba(241,241,241,0.55);
 }
 
-#input-area input {
-  flex: 1;
-  background: rgba(22,24,29,0.9);
-  border-radius: 14px;
-  border: 1px solid rgba(255,255,255,0.16);
-  padding: 10px 14px;
-  color: white;
+#customThemeInput:focus {
+  border-color: var(--accent, #2563eb);
+  box-shadow:
+    0 0 0 1px rgba(59,130,246,0.5),
+    0 6px 18px rgba(0,0,0,0.35);
 }
 
-#input-area button:first-of-type {
-  background: linear-gradient(145deg, var(--accent), #1e40af);
-  border-radius: 14px;
-  padding: 10px 16px;
-  border: none;
-  color: white;
+#customThemeInput:focus {
+  background: rgba(255,255,255,0.08);
 }
 
-#input-area button:last-of-type {
-  background: rgba(255,255,255,0.06);
-  border-radius: 14px;
-  padding: 10px 14px;
-  border: 1px solid rgba(255,255,255,0.14);
-  color: #f1f1f1;
+body.theme-custom .theme-buttons button[data-theme="custom"].active {
+  background: rgba(244,114,182,0.35);
+  border-color: rgba(244,114,182,0.9);
+  box-shadow: 0 8px 22px rgba(244,114,182,0.45);
 }
 
-/* =========================
-   THEME ACCENTS
-========================= */
-
-body.theme-food       { --accent: #f4a261; }
-body.theme-travel     { --accent: #4cc9f0; }
-body.theme-activities { --accent: #34d399; }
-body.theme-projects   { --accent: #a78bfa; }
-
-/* =========================
-   MOBILE
-========================= */
-
-/* =========================
-   MOBILE – FINAL POLISH
-========================= */
-
-@media (max-width: 700px) {
-
-  /* ===== HEADER ===== */
-
-  #header {
-    padding: 10px 12px 12px;
-  }
-
-  h1 {
-    font-size: 18px;
-    margin: 4px 0 6px;
-  }
-
-  #active-theme {
-    font-size: 13px;
-  }
-
-  #theme-selector {
-    gap: 8px;
-    margin-top: 16px;
-    margin-bottom: 24px;
-  }
-
-  .theme-buttons button {
-    padding: 8px 14px;
-    font-size: 13px;
-  }
-
-  /* ===== START SCREEN ===== */
-
-  #start-screen {
-    padding: 24px 12px;
-  }
-
-  .start-cards {
-    flex-direction: column;
-    gap: 16px;
-  }
-
-  .start-cards button {
-    width: 100%;
-    height: auto;
-    padding: 18px;
-    border-radius: 18px;
-  }
-
-  .start-cards strong {
-    font-size: 15px;
-  }
-
-  .start-cards span {
-    font-size: 13px;
-  }
-
-  .start-or {
-    margin: 12px 0 4px;
-    font-size: 13px;
-  }
-
-  .start-input {
-    margin-top: 24px;
-    padding: 0;
-  }
-
-  .start-input input,
-  .start-input button {
-    width: 100%;
-  }
-
-  .start-input {
-    flex-direction: column;
-    gap: 10px;
-  }
-
-  /* ===== CHAT ===== */
-
-  #chat-container {
-    height: 100dvh; /* viktigt för mobil */
-  }
-
-  #messages {
-    padding-left: 12px;
-    padding-right: 12px;
-    padding-top: 16px;
-
-    /* 👇 så sista bubblan aldrig hamnar bakom input */
-      padding-bottom: calc(var(--chat-bottom-height) + 64px);
-  }
-  .chat-spacer {
-  height: 48px; /* justera till 32 / 48 / 64 efter smak */
-  flex-shrink: 0;
-}
-
-  #messages::after {
-  content: "";
-  display: block;
-
-  /* 👇 extra visuell luft ovanför bottom chat */
-  height: 28px;
-}
-.message {
-  margin-bottom: 12px;
-}
-
-.message:last-child {
-  margin-bottom: 0; /* 👈 vi låter ::after stå för luften */
-}
-
-  /* ===== CHAT BUBBLES ===== */
-
-  .message {
-    max-width: 92%;
-    font-size: 16px;
-    line-height: 1.7;
-    padding: 12px 14px;
-  }
-
-  .message.user {
-    margin-left: auto;
-    margin-right: 0;
-  }
-
-  .message.assistant {
-    margin-right: auto;
-    margin-left: 0;
-  }
-
-  /* ===== BOTTOM BAR ===== */
-
-  #bottom-area {
-    padding: 10px 12px 12px;
-  }
-
-  #buttons {
-    flex-direction: column;
-    gap: 10px;
-    min-height: 80px; /* behåller höjd även utan knappar */
-  }
-
-  #buttons button {
-    width: 100%;
-    font-size: 14px;
-    padding: 14px 16px;
-    border-radius: 16px;
-  }
-
-  #input-area {
-    flex-direction: column;
-    gap: 10px;
-  }
-
-  #input-area input {
-    font-size: 16px; /* 👈 viktigt för iOS zoom-bug */
-    padding: 12px 14px;
-  }
-
-  #input-area button {
-    width: 100%;
-    padding: 12px 16px;
-    font-size: 15px;
-  }
+.theme-buttons button[data-theme="custom"]:hover {
+  background: rgba(244,114,182,0.25);
+  border-color: rgba(244,114,182,0.7);
+  box-shadow: 0 6px 18px rgba(244,114,182,0.35);
 }

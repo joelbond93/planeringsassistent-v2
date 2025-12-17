@@ -9,11 +9,24 @@ app.use(express.static(__dirname));
 
 const OPENAI_KEY = process.env.OPENAI_API_KEY;
 
-async function callOpenAI(messages) {
-  const fullMessages = [
-    {
-      role: "system",
-      content: `
+/* =====================
+   SYSTEM PROMPT (MED DATUM)
+===================== */
+function getSystemPrompt() {
+  const today = new Date().toISOString().split("T")[0];
+
+  return `
+Dagens datum är ${today}.
+Detta är ENDAST en referens.
+
+VIKTIGT:
+- Nämn INTE datum om det inte är relevant
+- Tvinga ALDRIG fram ett datum
+- Om du nämner ett datum:
+  - det får ALDRIG ligga i det förflutna
+  - använd framtida eller neutrala formuleringar
+- Det är helt okej att svara utan datum alls
+
 Du är en smart, tydlig och praktisk planeringsassistent.
 
 Svara alltid:
@@ -25,12 +38,29 @@ Ge alltid:
 - EN tydlig nästa riktning
 - FYRA konversationella fortsättningar (knappar)
 
-Format (MÅSTE följas):
+Knapparna ska:
+- vara 5–12 ord
+- kännas som naturliga repliker
+- aldrig vara frågor
+- aldrig vara generiska
+
+FORMAT (MÅSTE följas exakt):
 Knapp: alternativ 1;
 Knapp: alternativ 2;
 Knapp: alternativ 3;
 Knapp: alternativ 4;
-`
+`;
+}
+
+
+/* =====================
+   OPENAI CALL
+===================== */
+async function callOpenAI(messages) {
+  const fullMessages = [
+    {
+      role: "system",
+      content: getSystemPrompt()
     },
     ...messages
   ];
@@ -44,25 +74,39 @@ Knapp: alternativ 4;
     body: JSON.stringify({
       model: "gpt-4o-mini",
       messages: fullMessages,
+      temperature: 0.6,   // minskar hallucinationer
       max_tokens: 350
     })
   });
 
   const data = await res.json();
+
+  if (data.error) {
+    console.error("OpenAI error:", data.error);
+    return "AI-fel uppstod.";
+  }
+
   return data.choices?.[0]?.message?.content || "Tomt AI-svar.";
 }
 
+/* =====================
+   API ENDPOINT
+===================== */
 app.post("/api/chat", async (req, res) => {
-  const messages = req.body.messages || [];
-  const answer = await callOpenAI(messages.slice(-8));
-  res.json({ message: answer });
+  try {
+    const messages = req.body.messages || [];
+    const answer = await callOpenAI(messages.slice(-8));
+    res.json({ message: answer });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Serverfel" });
+  }
 });
 
-app.listen(3000, () =>
-  console.log("🚀 Server kör på http://localhost:3000")
-);
-
+/* =====================
+   START SERVER (ENDA)
+===================== */
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () =>
-  console.log("🚀 Server running on port", PORT)
+  console.log(`🚀 Server kör på port ${PORT}`)
 );
