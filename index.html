@@ -6,7 +6,7 @@
   <!-- Viewport: låser zoom och ger app-känsla -->
   <meta
     name="viewport"
-    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    content="width=device-width, initial-scale=1.0"
   />
 
   <!-- iOS: tillåt app-liknande beteende -->
@@ -47,6 +47,9 @@
       <input id="startInput" placeholder="Vad vill du planera?" />
       <button id="startButton">Starta</button>
     </div>
+    <p class="ai-disclaimer">
+  Svaren genereras automatiskt av AI och är tänkta som stöd, inte facit.
+</p>
   </section>
 
 
@@ -250,7 +253,7 @@ document.querySelectorAll(".theme-buttons button").forEach(btn => {
   btn.onclick = () => {
     const theme = btn.dataset.theme;
 
-    // 🔁 Toggle OFF om samma tema klickas igen
+    // Toggle OFF om samma tema klickas igen
     if (lockedTheme === theme) {
       lockedTheme = null;
       customThemeLabel = "";
@@ -260,7 +263,7 @@ document.querySelectorAll(".theme-buttons button").forEach(btn => {
         lockedTheme = "custom";
         customThemeInput.style.display = "inline-block";
         customThemeInput.focus();
-        return; // väntar på input
+        return; // vänta på input
       } else {
         lockedTheme = theme;
         customThemeInput.style.display = "none";
@@ -307,7 +310,12 @@ document.getElementById("customThemeInput").addEventListener("keydown", async e 
 function addMessage(text, sender) {
   const d = document.createElement("div");
   d.className = `message ${sender}`;
-  d.textContent = text;
+  const linked = text.replace(
+  /(https:\/\/[^\s]+)/g,
+  '<a href="$1" target="_blank" rel="noopener noreferrer">$1</a>'
+);
+
+  d.innerHTML = linked;
   messagesDiv.appendChild(d);
   messagesDiv.scrollTop = messagesDiv.scrollHeight;
 }

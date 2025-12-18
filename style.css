@@ -263,10 +263,18 @@ body {
   padding-bottom: 180px;  /* luft mot bottom */
 }
 
+
+.ai-disclaimer {
+  margin-top: 24px;
+  font-size: 12px;
+  line-height: 1.4;
+  opacity: 0.55;
+  text-align: center;
+}
 /* MESSAGES */
 .message {
   display: inline-block;
-  max-width: 75%;
+  max-width: 68ch;
   padding: 10px 14px;
   margin-bottom: 10px;
 
@@ -279,10 +287,31 @@ body {
   border-radius: 18px;
 }
 
+.message a {
+  color: inherit;
+  font-weight: 500;
+  word-wrap: break-word;
+  hyphens: auto;
+
+  text-decoration: none;
+  border-bottom: 1px solid rgba(255,255,255,0.35);
+
+  padding-bottom: 1px;
+
+  transition:
+    border-color 0.15s ease,
+    opacity 0.15s ease;
+}
+
+.message a:hover {
+  border-bottom-color: rgba(255,255,255,0.75);
+  opacity: 0.95;
+}
+
 .message.user {
   align-self: flex-end;
   max-width: fit-content;
-
+  max-width: 60ch;
   background: linear-gradient(
     145deg,
     rgba(255,255,255,0.14),
@@ -314,7 +343,7 @@ body {
 
 .message.assistant {
   align-self: flex-start;
-  max-width: fit-content;
+  max-width: 68ch;
 
   background:
     linear-gradient(
@@ -606,6 +635,7 @@ body.theme-custom #active-theme-value {
 }
 
 #customThemeInput {
+  display: none;
   background: #16181d;
   border-radius: 999px; /* matchar tema-knapparnas form */
   border: 1px solid rgba(255,255,255,0.18);
