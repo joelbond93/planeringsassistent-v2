@@ -2,10 +2,18 @@
 <html lang="sv">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"
-  content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-  
+
+  <!-- Viewport: låser zoom och ger app-känsla -->
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+  />
+
+  <!-- iOS: tillåt app-liknande beteende -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+
   <title>Planeringsassistent</title>
+
   <link rel="stylesheet" href="style.css" />
 </head>
 
@@ -15,9 +23,8 @@
   <h1>Planeringsassistent</h1>
 
   <div id="active-theme">
-    <span>Tema</span>
-    <strong id="active-theme-value">Inget valt</strong>
-  </div>
+  <strong id="active-theme-value">Inget valt</strong>
+</div>
 </header>
 
 <div id="theme-selector" class="theme-buttons">
@@ -222,7 +229,7 @@ function startFromInput() {
    THEME
 ===================== */
 function updateThemeUI() {
-  let label = "Inget valt";
+  let label = "Inget tema valt";
 
   if (lockedTheme === "custom") {
     label = customThemeLabel || "Eget tema";
@@ -241,20 +248,28 @@ function updateThemeUI() {
 
 document.querySelectorAll(".theme-buttons button").forEach(btn => {
   btn.onclick = () => {
-  if (btn.dataset.theme === "custom") {
-    lockedTheme = null;
-    customThemeInput.style.display = "inline-block";
-    customThemeInput.focus();
-  } else {
-    lockedTheme = btn.dataset.theme;
-    customThemeInput.style.display = "none";
-    customStartCards = null; // 👈 VIKTIGT
-    customThemeLabel = "";
-  }
+    const theme = btn.dataset.theme;
 
-  updateThemeUI();
-  renderStartIdeas();
-};
+    // 🔁 Toggle OFF om samma tema klickas igen
+    if (lockedTheme === theme) {
+      lockedTheme = null;
+      customThemeLabel = "";
+      customThemeInput.style.display = "none";
+    } else {
+      if (theme === "custom") {
+        lockedTheme = "custom";
+        customThemeInput.style.display = "inline-block";
+        customThemeInput.focus();
+        return; // väntar på input
+      } else {
+        lockedTheme = theme;
+        customThemeInput.style.display = "none";
+      }
+    }
+
+    updateThemeUI();
+    renderStartIdeas();
+  };
 });
 
 document.getElementById("customThemeInput").addEventListener("keydown", async e => {
