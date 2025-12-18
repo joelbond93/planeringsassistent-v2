@@ -2,7 +2,9 @@
 <html lang="sv">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"
+  content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+  
   <title>Planeringsassistent</title>
   <link rel="stylesheet" href="style.css" />
 </head>
@@ -70,7 +72,7 @@ let customStartCards = null;  // 👈 HÄR
 
 const messagesDiv = document.getElementById("messages");
 const buttonsDiv = document.getElementById("buttons");
-const userInput = document.getElementById("userInput");
+
 const customThemeInput = document.getElementById("customThemeInput"); // 👈 HÄR
 
 /* =====================
@@ -302,6 +304,7 @@ async function sendMessage(override = null) {
   addMessage(text, "user");
   userInput.value = "";
   buttonsDiv.innerHTML = "";
+  buttonsDiv.style.visibility = "hidden";
 
   addMessage("AI tänker…", "assistant thinking");
 
@@ -327,6 +330,8 @@ conversation.push({
 }
 
 function handleAIResponse(raw) {
+  buttonsDiv.style.visibility = "visible"; // 👈 VIKTIG RAD
+
   const split = raw.indexOf("Knapp:");
   const text = split !== -1 ? raw.slice(0, split) : raw;
   const btns = (raw.match(/Knapp:\s*([^;]+);/g) || []).slice(0, 4);
@@ -354,6 +359,7 @@ function resetConversation() {
 
   messagesDiv.innerHTML = "";
   buttonsDiv.innerHTML = "";
+  buttonsDiv.style.visibility = "hidden";
   userInput.value = "";
 
   document.getElementById("chat-container").hidden = true;
@@ -410,6 +416,28 @@ document.addEventListener("keydown", e => {
     }
   }
 });
+
+const userInput = document.getElementById("userInput");
+
+if (userInput && window.visualViewport) {
+  let lastViewportHeight = window.visualViewport.height;
+
+  window.visualViewport.addEventListener("resize", () => {
+    const currentHeight = window.visualViewport.height;
+
+    // Om viewport-höjden minskar → tangentbord öppnas
+    if (currentHeight < lastViewportHeight) {
+      userInput.scrollIntoView({
+        behavior: "smooth",
+        block: "center"
+      });
+    }
+
+    lastViewportHeight = currentHeight;
+  });
+}
+
+
 </script>
 
 </body>
